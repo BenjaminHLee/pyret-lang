@@ -52,6 +52,137 @@ data RE<T>:
 end
 
 
+char-sets = {
+  # Character classes adopted from POSIX and GNU standards. Very anglo-centric. Don't assume these
+  # sets contain/don't contain certain values! You can always use your own sets in re-char-set and
+  # re-char-set-not.
+  # See the table at [2] for more on the exact contents of the character classes.
+  
+  lower: [tree-set: 
+      "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", 
+      "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", 
+      "u", "v", "w", "x", "y", "z"],
+  upper: [tree-set: 
+      "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", 
+      "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", 
+      "U", "V", "W", "X", "Y", "Z"],
+  alpha: [tree-set: 
+      "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", 
+      "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", 
+      "U", "V", "W", "X", "Y", "Z", 
+      "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", 
+      "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", 
+      "u", "v", "w", "x", "y", "z"],
+  digit: [tree-set: 
+      "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"],
+  alnum: [tree-set: 
+      "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", 
+      "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", 
+      "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", 
+      "U", "V", "W", "X", "Y", "Z", 
+      "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", 
+      "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", 
+      "u", "v", "w", "x", "y", "z"],
+  punct: [tree-set: 
+      "]", "[", "!", "\"", "#", "$", "%", "&", "'", "(",
+      ")", "*", "+", ",", ".", "/", ":", ";", "<", "=",
+      ">", "?", "@", "\\", "^", "_", "`", "{", "|", "}",
+      "~", "-"],
+  graph: [tree-set: 
+      "!", "\"", "#", "$", "%", "&", "'", "(", ")", "*", 
+      "+", ",", "-", ".", "/", 
+      "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", 
+      ":", ";", "<", "=", ">", "?", "@", 
+      "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", 
+      "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", 
+      "U", "V", "W", "X", "Y", "Z", 
+      "[", "\\", "]", "^", "_", "`", 
+      "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", 
+      "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", 
+      "u", "v", "w", "x", "y", "z", 
+      "{", "|", "}", "~"],
+  space: [tree-set: 
+      " ", "\u0009", "\u000A", "\u000B", "\u000C", "\u000D"],
+  print: [tree-set: 
+      " ",
+      "!", "\"", "#", "$", "%", "&", "'", "(", ")", "*", 
+      "+", ",", "-", ".", "/", 
+      "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", 
+      ":", ";", "<", "=", ">", "?", "@", 
+      "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", 
+      "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", 
+      "U", "V", "W", "X", "Y", "Z", 
+      "[", "\\", "]", "^", "_", "`", 
+      "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", 
+      "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", 
+      "u", "v", "w", "x", "y", "z", 
+      "{", "|", "}", "~"],
+  cntrl: [tree-set: 
+      "\u0000", "\u0001", "\u0002", "\u0003", "\u0004", 
+      "\u0005", "\u0006", "\u0007", "\u0008", "\u0009",
+      "\u000A", "\u000B", "\u000C", "\u000D", "\u000E",
+      "\u000F", "\u0010", "\u0011", "\u0012", "\u0013", 
+      "\u0014", "\u0015", "\u0016", "\u0017", "\u0018", 
+      "\u0019", "\u001A", "\u001B", "\u001C", "\u001D", 
+      "\u001E", "\u001F"],
+  xdigit: [tree-set: 
+      "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", 
+      "A", "B", "C", "D", "E", "F", 
+      "a", "b", "c", "d", "e", "f"],
+  blank: [tree-set: 
+      " ", "\t"],
+  ascii: [tree-set: 
+      "\u0000", "\u0001", "\u0002", "\u0003", "\u0004",
+      "\u0005", "\u0006", "\u0007", "\u0008", "\u0009",
+      "\u000A", "\u000B", "\u000C", "\u000D", "\u000E",
+      "\u000F", "\u0010", "\u0011", "\u0012", "\u0013",
+      "\u0014", "\u0015", "\u0016", "\u0017", "\u0018",
+      "\u0019", "\u001A", "\u001B", "\u001C", "\u001D",
+      "\u001E", "\u001F", 
+      " ", 
+      "!", "\"", "#", "$", "%", "&", "'", "(", ")", "*",
+      "+", ",", "-", ".", "/", 
+      "0", "1", "2", "3", "4","5", "6", "7", "8", "9", 
+      ":", ";", "<", "=", ">", "?", "@", 
+      "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", 
+      "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", 
+      "U", "V", "W", "X", "Y", "Z", 
+      "[", "\\", "]", "^", "_", "`", 
+      "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", 
+      "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", 
+      "u", "v", "w", "x", "y", "z", 
+      "{", "|", "}", "~", "\u007F"]
+}
+
+shadow char-sets = {
+  lower:  char-sets.lower,
+  upper:  char-sets.upper,
+  alpha:  char-sets.alpha,
+  digit:  char-sets.digit,
+  alnum:  char-sets.alnum,
+  punct:  char-sets.punct,
+  graph:  char-sets.graph,
+  blank:  char-sets.blank,
+  space:  char-sets.space,
+  print:  char-sets.print,
+  cntrl:  char-sets.cntrl,
+  xdigit: char-sets.xdigit,
+  ascii:  char-sets.ascii,
+
+  # Additional aliases 
+  lower-case:   char-sets.lower,
+  upper-case:   char-sets.upper,
+  alphabetic:   char-sets.alpha,
+  numeric:      char-sets.digit,
+  alphanumeric: char-sets.alnum,
+  punctuation:  char-sets.punct,
+  graphic:      char-sets.graph,
+  whitespace:   char-sets.space,
+  printing:     char-sets.print,
+  control:      char-sets.cntrl,
+  hex-digit:    char-sets.xdigit}
+
+
 fun range-str-to-set(s :: String) -> Set<Char>:
   doc: ```Takes characters in pairs to form ranges by code point.
        Only accepts characters with code points that are less than 65536.
@@ -143,13 +274,15 @@ where:
 end
 
 
-# ==============================================================================
+# ==================================================================================================
 # References
-# ------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------------------
 #| 
-   [1] Olin Shivers, "The SRE regular-expression notation," August, 1998. 
-       [Online]. Avaliable: www.ccs.neu.edu/home/shivers/papers/sre.txt 
-       (web.archive.org/web/20191228112153/http://www.ccs.neu.edu/home/shivers/
-       papers/sre.txt). [Accessed Dec. 20, 2020].
+   [1] Olin Shivers. 1998. The SRE regular-expression notation. (August 1998). Retrieved Dec. 20, 
+       2020 from http://www.ccs.neu.edu/home/shivers/papers/sre.txt (https://web.archive.org/web/
+       20191228112153/http://www.ccs.neu.edu/home/shivers/papers/sre.txt).
 
+   [2] Jan Goyvaerts. 2019. POSIX Bracket Expressions. (December 2001). Retrieved Dec. 20, 2020 from
+       https://www.regular-expressions.info/posixbrackets.html (https://web.archive.org/web/
+       20201221070115/https://www.regular-expressions.info/posixbrackets.html).
 |#
